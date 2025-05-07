@@ -75,19 +75,19 @@ public:
 class iRotatable //something capable to rotate around a axis
 {
 public:
-  iRotatable(double angle_, double angularVelocity_) 
-    : angle(angle_), angularVelocity(angularVelocity_) {}
+  iRotatable(double direction_, double angularVelocity_) 
+    : direction(direction_), angularVelocity(angularVelocity_) {}
 
   // access
   double AngularVelocity() const { return angularVelocity; }
-  double Angle() const { return angle; }
+  double Direction() const { return direction; }
 
   // change
   void AngularVelocity(double val) { angularVelocity = val; }
-  void Angle(double val) { angle = val; }
+  void Direction(double val) { direction = val; }
 
 protected:
-  double angle,angularVelocity; // degrees 
+  double direction,angularVelocity; // degrees 
 };
 
 class cRotate //motion in a straight line
@@ -96,7 +96,7 @@ public:
   void Rotate(iRotatable& a) const
   {
     // new position as old position + velocity.
-    a.Angle(a.Angle() + a.AngularVelocity());
+    a.Direction(a.Direction() + a.AngularVelocity());
   }
 };
 
