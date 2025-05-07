@@ -43,6 +43,63 @@ public:
   T x, y;
 };
 
+
+class iMovable //something capable to move in a straight line
+{
+public:
+  iMovable(const cVector &pos, const cVector& vel) : position(pos), velocity(vel) {}
+
+  // access
+  const cVector &Position() const { return position; }
+  const cVector &Velocity() const { return velocity; }
+
+  // change
+  void Position(const cVector& pos) { position = pos; }
+  void Velocity(const cVector &vel) { velocity = vel; }
+
+protected:
+  cVector position, velocity;
+};
+
+class cMove //motion in a straight line
+{
+public:
+  void move(iMovable &m ) const
+  {
+    // new position as old position + velocity.
+    m.Position(m.Position() + m.Velocity() );
+  }
+};
+
+
+class iRotatable //something capable to rotate around a axis
+{
+public:
+  iRotatable(double angle_, double angularVelocity_) 
+    : angle(angle_), angularVelocity(angularVelocity_) {}
+
+  // access
+  double AngularVelocity() const { return angularVelocity; }
+  double Angle() const { return angle; }
+
+  // change
+  void AngularVelocity(double val) { angularVelocity = val; }
+  void Angle(double val) { angle = val; }
+
+protected:
+  double angle,angularVelocity; // degrees 
+};
+
+class cRotate //motion in a straight line
+{
+public:
+  void Rotate(iRotatable& a) const
+  {
+    // new position as old position + velocity.
+    a.Angle(a.Angle() + a.AngularVelocity());
+  }
+};
+
 class cAbstractionsDefinition
 {
 public:
