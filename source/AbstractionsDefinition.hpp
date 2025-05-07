@@ -1,11 +1,14 @@
 #ifndef ABSTRACTIONSDEFINITION_HPP
 #define ABSTRACTIONSDEFINITION_HPP
 
+#include <math.h>
+#define M_PI           3.14159265358979323846
+
 class cVector
 {
 public:
-  using T = int;
-  using data_type = int;
+  using T = double;
+  using data_type = double;
 
   cVector() = default;
   cVector(const cVector& other) = default;
@@ -81,13 +84,27 @@ public:
   // access
   double AngularVelocity() const { return angularVelocity; }
   double Direction() const { return direction; }
+  const cVector& Position() const { return position; }
+  double Velocity() const { return velocity; }
+
+  cVector V() const 
+  { 
+      return cVector(velocity * cos(DirectionRad()), velocity * sin(DirectionRad()));
+  }
+
+  double DirectionRad() const {return 2 * M_PI * direction / 360;  }
 
   // change
   void AngularVelocity(double val) { angularVelocity = val; }
   void Direction(double val) { direction = val; }
+  void Position(const cVector& pos) { position = pos; }
+  void Velocity(double vel) { velocity = vel; }
+
+  
 
 protected:
-  double direction,angularVelocity; // degrees 
+  cVector position;
+  double velocity, direction, angularVelocity; // degrees 
 };
 
 class cRotate //motion in a straight line
@@ -97,6 +114,9 @@ public:
   {
     // new position as old position + velocity.
     a.Direction(a.Direction() + a.AngularVelocity());
+    a.Position(a.Position() + a.V());
+
+
   }
 };
 
