@@ -160,8 +160,6 @@ TEST_F(test_cMove, test_setPosition_throwsException)
     }
 }
 
-
-
 TEST_F(test_cRotate, test_RegularRotating)
 {
     Test_cRotatable t0( 60, 30 );
