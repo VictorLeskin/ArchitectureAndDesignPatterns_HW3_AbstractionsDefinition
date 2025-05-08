@@ -1,8 +1,10 @@
 #ifndef ABSTRACTIONSDEFINITION_HPP
 #define ABSTRACTIONSDEFINITION_HPP
 
+#include <exception>
 #include <math.h>
-#define M_PI           3.14159265358979323846
+
+static constexpr double M_PI = 3.14159265358979323846;
 
 class cVector
 {
@@ -46,85 +48,119 @@ public:
   T x, y;
 };
 
+// base class of exception used in task. It has name.
+class cException : public std::exception
+{
+public:
+    cException(const char* sz) : szWhat(sz) {}
+
+    const char* what() const noexcept { return szWhat; }
+
+protected:
+    const char* szWhat;
+};
+
 
 class iMovable //something capable to move in a straight line
 {
 public:
-  iMovable(const cVector &pos, const cVector& vel) : position(pos), velocity(vel) {}
+    virtual ~iMovable() {}
+
+    // access
+    virtual const cVector& Position() const = 0;
+    virtual const cVector& Velocity() const = 0;
+
+    // change
+    virtual void Position(const cVector& pos) = 0;
+    virtual void Velocity(const cVector& vel) = 0;
+};
+
+class cMovable : public iMovable
+{
+public:
+  cMovable(const cVector &pos, const cVector& vel) : position(pos), velocity(vel) {}
 
   // access
-  const cVector &Position() const { return position; }
-  const cVector &Velocity() const { return velocity; }
+  const cVector &Position() const override { return position; }
+  const cVector &Velocity() const override { return velocity; }
 
   // change
-  void Position(const cVector& pos) { position = pos; }
-  void Velocity(const cVector &vel) { velocity = vel; }
+  void Position(const cVector& pos) override { position = pos; }
+  void Velocity(const cVector &vel) override { velocity = vel; }
 
 protected:
   cVector position, velocity;
 };
 
-class cMove //motion in a straight line
+class cMove  // class performing moving along stright line
 {
+private:
+    cMove(const cMove&) = delete;
+    cMove& operator=(const cMove&) = delete;
+
 public:
-  void move(iMovable &m ) const
-  {
-    // new position as old position + velocity.
-    m.Position(m.Position() + m.Velocity() );
-  }
+    cMove(iMovable& m_) : m(m_) {}
+
+public:
+    void Execute()
+    {
+        // new position as old position + velocity.
+        m.Position(m.Position() + m.Velocity());
+    }
+
+public:
+    iMovable& m;
 };
 
 
-class iRotatable //something capable to rotate around a axis
+class iRotatable //interface class of something capable to rotate around a axis
 {
 public:
-  iRotatable(double direction_, double angularVelocity_) 
-    : direction(direction_), angularVelocity(angularVelocity_) {}
+  virtual ~iRotatable() {}
 
   // access
-  double AngularVelocity() const { return angularVelocity; }
-  double Direction() const { return direction; }
-  const cVector& Position() const { return position; }
-  double Velocity() const { return velocity; }
-
-  cVector V() const 
-  { 
-      return cVector(velocity * cos(DirectionRad()), velocity * sin(DirectionRad()));
-  }
-
-  double DirectionRad() const {return 2 * M_PI * direction / 360;  }
+  virtual double AngularVelocity() const = 0;
+  virtual double Direction() const = 0;
 
   // change
-  void AngularVelocity(double val) { angularVelocity = val; }
-  void Direction(double val) { direction = val; }
-  void Position(const cVector& pos) { position = pos; }
-  void Velocity(double vel) { velocity = vel; }
-
-  
-
-protected:
-  cVector position;
-  double velocity, direction, angularVelocity; // degrees 
+  virtual void AngularVelocity(double val) = 0;
+  virtual void Direction(double val) = 0;
 };
 
-class cRotate //motion in a straight line
+class cRotatable : public iRotatable
 {
 public:
-  void Rotate(iRotatable& a) const
-  {
-    // new position as old position + velocity.
-    a.Direction(a.Direction() + a.AngularVelocity());
-    a.Position(a.Position() + a.V());
+    cRotatable(double dir, double vel) : direction(dir), angularVelocity(vel) {}
+    // access
+    double AngularVelocity() const override { return angularVelocity; }
+    double Direction() const override { return direction; }
 
-
-  }
-};
-
-class cAbstractionsDefinition
-{
-public:
+    // change
+    void AngularVelocity(double val) override { angularVelocity = val; }
+    void Direction(double val) override { direction = val; }
 
 protected:
+    double direction, angularVelocity; // degrees 
+};
+
+
+class cRotate //class to perform rotation
+{
+private:
+    cRotate(const cRotate&) = delete;
+    cRotate& operator=(const cRotate&) = delete;
+
+public:
+    cRotate(iRotatable& m_) : m(m_) {}
+
+public:
+    void Execute()
+    {
+        m.Direction(m.Direction() + m.AngularVelocity());
+    }
+
+public:
+    iRotatable& m;
 };
 
 #endif //#ifndef ABSTRACTIONSDEFINITION_HPP
