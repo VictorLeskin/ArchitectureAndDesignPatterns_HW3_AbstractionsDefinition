@@ -4,7 +4,7 @@
 #include <exception>
 #include <math.h>
 
-static constexpr double M_PI = 3.14159265358979323846;
+static constexpr double DPI = 3.14159265358979323846;
 
 class cVector
 {
